@@ -1,3 +1,4 @@
+# Define an AWS RDS instance with low ressource and no multi-az
 apiVersion: apiextensions.crossplane.io/v1alpha1
 kind: Composition
 metadata:

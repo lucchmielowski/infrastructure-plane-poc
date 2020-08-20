@@ -1,3 +1,4 @@
+# Publish our infrastructure so it can be required by services
 apiVersion: apiextensions.crossplane.io/v1alpha1
 kind: InfrastructurePublication
 metadata:

@@ -1,3 +1,4 @@
+# Define a simple DB using bitnami's postgresql helm chart
 apiVersion: apiextensions.crossplane.io/v1alpha1
 kind: Composition
 metadata:
