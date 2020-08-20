@@ -1,0 +1,43 @@
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: Composition
+metadata:
+  name: postgresql-dev
+  labels:
+    provider: aws
+    engine: postgresql
+    tier: dev
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  reclaimPolicy: Delete
+  from:
+    apiVersion: database.example.org/v1alpha1
+    kind: PostgreSQLInstance
+  to:
+    - base:
+        apiVersion: helm.crossplane.io/v1alpha1
+        kind: Release
+        spec:
+          forProvider:
+            chart:
+              name: postgresql
+              repository: https://charts.bitnami.com/postgresql
+              version: 9.3.2
+            namespace: postgresql
+            set:
+              - name: persistence.size
+              - name: postgresqlUsername
+              - name: postgresqlDatabase
+              - name: postgresqlPassword
+                value: "devdb123!"
+              - name: image.tag
+                value: "11.8"
+          providerRef:
+            name: helm-provider
+          reclaimPolicy: Delete
+      patches:
+        - fromFieldPath: "spec.parameters.storageDB"
+          toFieldPath: "spec.forProvider.set[0].value"
+        - fromFieldPath: "spec.parameters.username"
+          toFieldPath: "spec.forProvider.set[1].value"
+        - fromFieldPath: "spec.parameters.dbName"
+          toFieldPath: "spec.forProvider.set[2].value"

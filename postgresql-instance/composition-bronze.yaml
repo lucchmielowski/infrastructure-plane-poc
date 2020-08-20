@@ -1,0 +1,47 @@
+apiVersion: apiextensions.crossplane.io/v1alpha1
+kind: Composition
+metadata:
+  name: postgresql-bronze
+  labels:
+    provider: aws
+    engine: postgres
+    tier: bronze
+spec:
+  writeConnectionSecretsToNamespace: crossplane-system
+  reclaimPolicy: Delete
+  from:
+    apiVersion: database.example.org/v1alpha1
+    kind: PostgreSQLInstance
+  to:
+    - base:
+        apiVersion: datbase.aws.crossplane.io/v1beta1
+        kind: RDSInstance
+        spec:
+          forProvider:
+            dbInstanceClass: db.t2.small
+            engine: postgres
+            engineVersion: "11.8"
+            skipFinalSnapshotBeforeDeletion: true
+        writeConnectionSecretToRef:
+          namespace: crossplane-system
+        providerRef:
+          name: aws-provider
+      patches:
+        - fromFieldPath: "metadata.uid"
+          toFieldPath: "spec.writeConnectionSecretToRef.name"
+          transforms:
+            - type: string
+              string:
+                fmt: "%s-postgresql"
+        - fromFieldPath: "spec.parameters.storageDB"
+          toFieldPath: "spec.forProvider.allocatedStorage"
+        - fromFieldPath: "spec.parameters.username"
+          toFieldPath: "spec.forProvider.masterUsername"
+        - fromFieldPath: "spec.parameters.dbName"
+          toFieldPath: "spec.forProvider.dbName"
+      connectionDetails:
+        - fromConnectionSecretKey: username
+        - fromConnectionSecretKey: password
+        - fromConnectionSecretKey: endpoint
+        - name: port
+          value: "5432"

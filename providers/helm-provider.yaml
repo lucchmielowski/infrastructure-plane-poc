@@ -1,0 +1,9 @@
+apiVersion: kubernetes.crossplane.io/v1alpha1
+kind: Provider
+metadata:
+  name: helm-provider
+spec:
+  credentialsSecretRef:
+    # Get secret name from service account
+    name: provider-helm-token-tsp6m       
+    namespace: crossplane-system
