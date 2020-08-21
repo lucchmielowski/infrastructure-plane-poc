@@ -15,7 +15,7 @@ spec:
     kind: PostgreSQLInstance
   to:
     - base:
-        apiVersion: datbase.aws.crossplane.io/v1beta1
+        apiVersion: database.aws.crossplane.io/v1beta1
         kind: RDSInstance
         spec:
           forProvider:
@@ -23,10 +23,10 @@ spec:
             engine: postgres
             engineVersion: "11.8"
             skipFinalSnapshotBeforeDeletion: true
-        writeConnectionSecretToRef:
-          namespace: crossplane-system
-        providerRef:
-          name: aws-provider
+          writeConnectionSecretToRef:
+            namespace: crossplane-system
+          providerRef:
+            name: aws-provider
       patches:
         - fromFieldPath: "metadata.uid"
           toFieldPath: "spec.writeConnectionSecretToRef.name"
@@ -34,7 +34,7 @@ spec:
             - type: string
               string:
                 fmt: "%s-postgresql"
-        - fromFieldPath: "spec.parameters.storageDB"
+        - fromFieldPath: "spec.parameters.storageGB"
           toFieldPath: "spec.forProvider.allocatedStorage"
         - fromFieldPath: "spec.parameters.username"
           toFieldPath: "spec.forProvider.masterUsername"
